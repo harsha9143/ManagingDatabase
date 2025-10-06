@@ -1,30 +1,48 @@
-const mysql = require("mysql2");
+const { Sequelize } = require("sequelize");
 
-const connection = mysql.createConnection({
+const sequelize = new Sequelize("students", "root", "vm4udte@W", {
   host: "localhost",
-  user: "root",
-  password: "vm4udte@W",
-  database: "students",
+  dialect: "mysql",
 });
 
-connection.connect((err) => {
-  if (err) {
-    console.log("database connection failed");
-    return;
+(async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("Database connected successfully");
+  } catch (error) {
+    console.log("Database connection failed");
   }
+})();
 
-  console.log("database connected successfully");
+module.exports = sequelize;
 
-  // let createTable =
-  //   "CREATE TABLE students (id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(100), email VARCHAR(100));";
+// const mysql = require("mysql2");
 
-  // connection.execute(createTable, (error) => {
-  //   if (error) {
-  //     console.log("table creation failed!!");
-  //     return;
-  //   }
-  //   console.log("Table created successfully");
-  // });
-});
+// const connection = mysql.createConnection({
+//   host: "localhost",
+//   user: "root",
+//   password: "vm4udte@W",
+//   database: "students",
+// });
 
-module.exports = connection;
+// connection.connect((err) => {
+//   if (err) {
+//     console.log("database connection failed");
+//     return;
+//   }
+
+//   console.log("database connected successfully");
+
+//   let createTable =
+//     "CREATE TABLE students (id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(100), email VARCHAR(100));";
+
+//   connection.execute(createTable, (error) => {
+//     if (error) {
+//       console.log("table creation failed!!");
+//       return;
+//     }
+//     console.log("Table created successfully");
+//   });
+// });
+
+// module.exports = connection;

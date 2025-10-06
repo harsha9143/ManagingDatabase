@@ -2,6 +2,8 @@ const express = require("express");
 const studentRouter = require("./routes/studentRouter");
 const db = require("./utils/dbUtil");
 
+const Student = require("./models/student");
+
 const app = express();
 
 app.use(express.json());
@@ -20,6 +22,15 @@ app.use((req, res, next) => {
 });
 
 const PORT = 4000;
-app.listen(PORT, () => {
-  console.log(`connection eshtablished successfully http://localhost:${PORT}`);
-});
+
+db.sync({ force: true })
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(
+        `connection eshtablished successfully http://localhost:${PORT}`
+      );
+    });
+  })
+  .catch((err) => {
+    console.log("Server connection failed");
+  });
