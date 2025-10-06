@@ -1,71 +1,88 @@
+const Student = require("../models/student");
 const db = require("../utils/dbUtil");
 
-exports.addStudent = (req, res, next) => {
+exports.addStudent = async (req, res, next) => {
   const { name, email } = req.body;
 
-  db.execute(
-    "INSERT INTO students(name, email) VALUES(?, ?)",
-    [name, email],
-    (err) => {
-      if (err) {
-        console.log("Insertion failed");
-        res.status(500).send(err.message);
-        db.end();
-        return;
-      }
-      res.status(200).send(`Student with name ${name} inserted in database`);
-    }
-  );
-};
+  try {
+    const student = await Student.create({
+      name,
+      email,
+    });
 
-exports.editStudent = (req, res, next) => {
-  const { name, email } = req.body;
-
-  if (name && email) {
-    return db.execute(
-      "UPDATE students SET name = ?, email = ? WHERE id = ?;",
-      [name, email, req.params.id],
-      (err) => {
-        if (err) {
-          res.status(500).send("failed updating name and email");
-        }
-        res.status(200).send(`student name and email id is updated`);
-      }
-    );
-  }
-
-  if (name) {
-    return db.execute(
-      "UPDATE students SET name = ? WHERE id = ?;",
-      [name, req.params.id],
-      (err) => {
-        if (err) {
-          res.status(500).send("failed updating name");
-        }
-        res.status(200).send(`student name is updated`);
-      }
-    );
-  }
-
-  if (email) {
-    return db.execute(
-      "UPDATE students SET email = ? WHERE id = ?;",
-      [email, req.params.id],
-      (err) => {
-        if (err) {
-          res.status(500).send("failed updating email");
-        }
-        res.status(200).send(`student email id is updated`);
-      }
-    );
+    res.status(201).send(`Student with name ${name} registered successfully`);
+  } catch (error) {
+    res.status(500).send("student registration failed");
   }
 };
 
-exports.deleteStudent = (req, res, next) => {
-  db.execute("DELETE FROM students WHERE id = ?", [req.params.id], (err) => {
-    if (err) {
-      res.status(500).send("Failed delting user");
+exports.editStudent = async (req, res, next) => {
+  const { name, email } = req.body;
+
+  try {
+    const student = await Student.findByPk(req.params.id);
+    if (!student) {
+      return res.status(404).send("Student not found");
     }
-    res.status(200).send(`user deleted`);
-  });
+
+    if (name) {
+      student.name = name;
+    }
+
+    if (email) {
+      student.email = email;
+    }
+
+    await student.save();
+
+    res.status(200).send("Student details updated successfully");
+  } catch (error) {
+    res.send(500).send("updating student failed");
+  }
+};
+
+exports.deleteStudent = async (req, res, next) => {
+  try {
+    const student = await Student.destroy({
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    if (!student) {
+      return res.status(404).send("student not found");
+    }
+
+    res.status(200).send("Student has been deleted successfully");
+  } catch (error) {
+    res.send(500).send("Student not deleted");
+  }
+};
+
+exports.getAllStudents = async (req, res, next) => {
+  try {
+    const students = await Student.findAll();
+
+    if (!students) {
+      return res.status(404).send("Students doesn't exist");
+    }
+
+    res.status(200).json({ data: students });
+  } catch (error) {
+    res.status(500).send("Fetching students failed");
+  }
+};
+
+exports.getStudentById = async (req, res, next) => {
+  try {
+    const students = await Student.findByPk(req.params.id);
+
+    if (!students) {
+      return res.status(404).send("Student doesn't exist");
+    }
+
+    res.status(200).json({ data: students });
+  } catch (error) {
+    res.status(500).send("Fetching student failed");
+  }
 };
