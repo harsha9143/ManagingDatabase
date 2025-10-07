@@ -2,7 +2,14 @@ const express = require("express");
 const studentRouter = require("./routes/studentRouter");
 const db = require("./utils/dbUtil");
 
-const { Student, Department, IdentityCard } = require("./models/index");
+const {
+  Student,
+  Department,
+  IdentityCard,
+  Courses,
+  StudentCourses,
+} = require("./models/index");
+const courseRouter = require("./routes/courseRouter");
 
 const app = express();
 
@@ -16,6 +23,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/students", studentRouter);
+app.use("/courses", courseRouter);
 
 app.use((req, res, next) => {
   res.status(404).send("<h1>Error 404 - page not found</h1>");
