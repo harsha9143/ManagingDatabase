@@ -1,4 +1,7 @@
-const Student = require("../models/student");
+// const IdentityCard = require("../models/identityCard");
+// const Student = require("../models/student");
+
+const { Student, Department, IdentityCard } = require("../models/index");
 const db = require("../utils/dbUtil");
 
 exports.addStudent = async (req, res, next) => {
@@ -84,5 +87,19 @@ exports.getStudentById = async (req, res, next) => {
     res.status(200).json({ data: students });
   } catch (error) {
     res.status(500).send("Fetching student failed");
+  }
+};
+
+exports.associateStudentWithId = async (req, res, next) => {
+  try {
+    const student = await Student.create(req.body.student);
+    const idCard = await IdentityCard.create({
+      ...req.body.identityCard,
+      studentId: student.id,
+    });
+
+    res.status(201).json({ student, idCard });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };

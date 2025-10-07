@@ -2,7 +2,7 @@ const express = require("express");
 const studentRouter = require("./routes/studentRouter");
 const db = require("./utils/dbUtil");
 
-const Student = require("./models/student");
+const { Student, Department, IdentityCard } = require("./models/index");
 
 const app = express();
 

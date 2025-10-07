@@ -9,5 +9,9 @@ studentRouter.get("/:id", studentController.getStudentById);
 studentRouter.post("/", studentController.addStudent);
 studentRouter.put("/update/:id", studentController.editStudent);
 studentRouter.delete("/delete/:id", studentController.deleteStudent);
+studentRouter.post(
+  "/addStudentWithId",
+  studentController.associateStudentWithId
+);
 
 module.exports = studentRouter;
